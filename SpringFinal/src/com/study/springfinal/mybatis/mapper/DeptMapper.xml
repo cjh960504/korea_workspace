@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Dept">
+<!-- 조인 시 VO가 두개의 컬럼을 감당할 수 있어야함...  -->
+	<!-- 쿼리결과와 객체간 매핑을 자동으로 하는 것이 아니라, 
+	개발자가 주도하여 처리를 하고 싶을때는 별도의 매핑을 선언.. -->
+	<!-- 매핑의 커스터마이징 -->
+	<resultMap type="Dept" id="deptJoinEmp">
+	<!-- column=query에서 뽑아진 컬럼명 -->
+		<id column="deptno" property="deptno"/><!-- primary key -->
+		<result column="dname" property="dname"/><!-- 일반컬럼 -->
+		<result column="loc" property="loc"/>
+		<!-- 부서정보가져오고 부서정보에 포함되는 외부에 있는 부서원정보가져오기-->
+		<!-- Emp(ofType)로 구성된  List(javaType)-->
+		<!-- deptno컬럼을 가져오겠다. -->
+		<!-- propery는 set메서드를 생각 -->
+		<collection column="deptno" property="empList" javaType="java.util.List" ofType="Emp" select="Emp.select"/>
+	</resultMap>
+	<!-- 이중포문과 비슷 dept정보를 가져올 때 그 정보를 가지고 emp정보를 가져오고 다음 dept가져오면 그 dept에 대한 emp를 뽑아온다. -->
+	<select id="selectAll" resultMap="deptJoinEmp">
+		select deptno, dname, loc from dept 
+	</select>
+	
+	<!-- 부서정보 1건 가져오기 -->
+	<select id="selectById" parameterType="int" resultType="Dept">
+		select * from dept where deptno=#{deptno}
+	</select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:prefix="/" p:suffix=".jsp"/>	
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+		<property name="alwaysUseFullPath" value="true"/>
+	</bean>
+	
+	<bean class="com.model2.mybatis.config.MybatisConfigManager" id="mybatisConfigManager"/>
+	<bean class="com.model2.board.model.BoardDAO" id="boardDAO" p:manager-ref="mybatisConfigManager"/>
+	<bean class="com.model2.board.controller.ListController" name="/board/list" p:dao-ref="boardDAO"/>
+	<bean class="com.model2.board.controller.RegistController" name="/board/regist" p:boardDAO-ref="boardDAO"/>
+	<bean class="com.model2.board.controller.DetailController" name="/board/detail" p:boardDAO-ref="boardDAO"/>
+	<bean class="com.model2.board.controller.EditController" name="/board/edit" p:boardDAO-ref="boardDAO"/>
+	<bean class="com.model2.board.controller.DeleteController" name="/board/delete" p:boardDAO-ref="boardDAO"/>
+</beans>

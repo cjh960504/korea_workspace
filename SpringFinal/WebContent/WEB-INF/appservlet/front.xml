@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+<!-- 
+	1) SimpleUrlHandlerMapping
+	2) BeanNameUrlHandlerMapping
+	3) DefaultAnnotationHandlerMapping : 개발자가 HandlerMapping을 지정하지 않으면, 기본이 이 방식이 채택
+		-특징) 설정파일을 간소화시키기 위해 주로 jdk5부터 사용 가능한 @어노테이션을 이용함
+	"스프링 설정 파일의 간소화"를 목표로 하기 떄문...
+	=> 스프링 부트!!(설정할 것이 별로 없슴)
+ -->
+ 	<!-- HandlerMapping 등록 -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" 
+	id="handlerMapping"/>
+	
+	<!-- controller 등록 -->
+	<!-- <bean class="com.study.springfinal.test.controller.TestController" id="testController"/>
+	<bean class="com.study.springfinal.gallery.controller.GalleryController" id="galleryController"/>  -->
+	<!-- 일일이 다 등록하지말고! -->
+	<!-- @어노테이션이 붙은 클래스를 모두 검색해서, 스프링에서 인스턴스를 자동으로 올리자!!! -->
+	<!-- com.study.springfinal.controller 아래의 모든 패키지내의 클래스들을 검사하는데 -->
+	<!-- @Controller가 붙은 대상은 전부 검사대상이다!! -->
+	<context:component-scan base-package="com.study.springfinal.*"></context:component-scan>
+	
+	<!-- 설정파일을 간소화시키기 위해, 컴포넌트를 자동으로 생성하기 위한 scan을 시도하고있다.. 
+		하지만, bean태그를 작성하지 않으면 빈과 빈간의 weaving(엮는작업)이 불가능하진다...
+		해결책) 자바코드안이 어노테이션을 적극활용하면 된다!!
+	-->
+	
+	<!-- 파일업로드 처리 bean등록 -->
+	<bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>
+	
+	<!-- ViewResolver 등록 -->	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
+	p:prefix="/" p:suffix=".jsp" id="viewResolver"/>
+	
+	
+</beans>
