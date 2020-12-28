@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Dept">
+	<resultMap type="Dept" id="empJoin">
+		<id column="deptno" property="deptno"/>
+		<result column="dname" property="dname"/>
+		<result column="loc" property="loc"/>
+		<!-- column : 쿼리의 결과로 나온 컬럼 중 어떤 컬럼을 이용해서 collection에 쓰겟니? -->
+		<collection property="empList" column="deptno" javaType="java.util.List" ofType="Emp" select="Emp.selectFromDept"/>
+	</resultMap>
+	<select id="selectJoin" resultMap="empJoin">
+		select * from dept
+	</select>
+	
+	<select id="select" parameterType="int" resultType="Dept">
+		select * from dept where deptno=#{deptno}
+	</select>
+</mapper>

@@ -14,7 +14,7 @@
 		<!-- Emp(ofType)로 구성된  List(javaType)-->
 		<!-- deptno컬럼을 가져오겠다. -->
 		<!-- propery는 set메서드를 생각 -->
-		<collection column="deptno" property="empList" javaType="java.util.List" ofType="Emp" select="Emp.select"/>
+		<collection column="deptno" javaType="java.util.List" ofType="Emp" select="Emp.select"  property="empList"/>
 	</resultMap>
 	<!-- 이중포문과 비슷 dept정보를 가져올 때 그 정보를 가지고 emp정보를 가져오고 다음 dept가져오면 그 dept에 대한 emp를 뽑아온다. -->
 	<select id="selectAll" resultMap="deptJoinEmp">

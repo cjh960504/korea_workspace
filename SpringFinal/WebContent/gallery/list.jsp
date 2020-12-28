@@ -1,4 +1,4 @@
-<%@page import="com.study.springfinal.common.Pager"%>
+<%@page import="com.review.common.Pager"%>
 <%@page import="com.study.springfinal.domain.Gallery"%>
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html;charset=utf-8"%>
