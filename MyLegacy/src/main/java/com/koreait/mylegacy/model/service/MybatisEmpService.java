@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.koreait.mylegacy.exception.RegistException;
 import com.koreait.mylegacy.model.dao.MybatisDeptDAO;
 import com.koreait.mylegacy.model.dao.MybatisEmpDAO;
 import com.koreait.mylegacy.model.domain.Emp;
@@ -36,10 +37,19 @@ public class MybatisEmpService {
 		SqlSession sqlSession = manager.getSqlSession();//default AutoCommit = false
 		deptDAO.setSqlSession(sqlSession);
 		empDAO.setSqlSession(sqlSession);
-		
-		deptDAO.insert(emp.getDept());
-		empDAO.insert(emp);
-		manager.freeSqlSession(sqlSession);
+		 
+		//아래의 두 DML 메서드를 대상으로 커밋/롤백해야 할 코드 라인은??
+		try {
+			deptDAO.insert(emp.getDept());
+			empDAO.insert(emp);
+			sqlSession.commit();
+			result=1;
+		} catch (RegistException e) {
+			sqlSession.rollback();
+			e.printStackTrace();
+		} finally {
+			manager.freeSqlSession(sqlSession);
+		}
 		return result;
 	}
 }
