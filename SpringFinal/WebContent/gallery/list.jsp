@@ -3,10 +3,10 @@
 <%@page import="java.util.List"%>
 <%@ page contentType="text/html;charset=utf-8"%>
 <%
-	//포워딩을 통해 넘겨받은 request 객체에 담겨진 데이터 꺼내기
+//포워딩을 통해 넘겨받은 request 객체에 담겨진 데이터 꺼내기
 	List<Gallery> galleryList = (List)request.getAttribute("galleryList");
 	out.print("게시물 수는 "+galleryList.size());
-	Pager pager = new Pager();
+	com.koreait.fashionshop.common.Pager pager = new com.koreait.fashionshop.common.Pager();
 	pager.init(request, galleryList);
 %>
 <!DOCTYPE html>

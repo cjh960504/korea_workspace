@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.3.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<!-- JNDI등록 : Mybatis가 아닌,  스프링이 접속객체를 주도한다. 왜? 스프링이 트랜잭션을 관리하므로 -->
+	<jee:jndi-lookup jndi-name="jdbc/myoracle" resource-ref="true" id="dataSource"/>
+	
+	<!-- 각 기술에 맞는 트랜잭션 객체를 등록한다 
+	ex) Hibernate 사용 시 : HibernateTaransactionManager  
+		 jdbc 사용 시 : DataSourceTransactionManager
+		 mybatis 사용 시 : DataSourceTransactionManager
+	-->
+	<bean 
+	id="dataSourceTransactionManager" 
+	class="org.springframework.jdbc.datasource.DataSourceTransactionManager" 
+	p:dataSource-ref="dataSource"/>
+	
+	<!-- Spring JDBC 사용 시  -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate" p:dataSource-ref="dataSource"/>
+	
+	<!-- Mybatis Spring 사용 시 -->
+	<!-- Spring에서 지원하지 않기 떄문에 Mybatis Spring -->
+	<!-- 클래스패스를 사용중이면 명시 필수!!! classpath: -->
+	<bean id="sqlSessionFactoryBean" 
+	class="org.mybatis.spring.SqlSessionFactoryBean"
+	p:configLocation="classpath:com/koreait/fashionshop/mybatis/config/config.xml"
+	p:dataSource-ref="dataSource"
+	/>
+	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" >
+		<constructor-arg ref="sqlSessionFactoryBean"/>
+	</bean>
+	
+	<!-- 파일매니저 등록 -->
+	<bean id="fileManager" class="com.koreait.fashionshop.common.FileManager" p:saveDir="C:/korea_workspace/FashionShop/src/main/webapp/resources/data"/>
+	
+	<!-- 모델 영역은 모든 서블릿에서 공용으로 사용할 예정이므로, ServletContext 수준에서 어플리케이션이 가동될 때부터 등록되어 있어야한다. -->
+	<context:component-scan base-package="com.koreait.fashionshop.model"/>
+</beans>

@@ -2,47 +2,17 @@ package com.koreait.mvclegacy.model.notice;
 
 import java.util.List;
 
-import org.mybatis.spring.SqlSessionTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
-import com.koreait.mvclegacy.exception.DMLException;
 import com.koreait.mvclegacy.model.domain.Notice;
 
-@Repository
-public class NoticeDAO {
-	//스프링이 지원하는 DB기술을 이용하기 전에는, 트랜잭션때문에 SqlSession을 서비스로부터 주입받았으나
-	//더이상 트랜잭션 떄문에 서비스에서 주입받을 필요가 없다.. 스프링이 알아서 트랜잭션을 처리해준다..
-	@Autowired
-	private SqlSessionTemplate sessionTemplate;
-	
-	public List selectAll() {
-		List list = null;
-		list = sessionTemplate.selectList("Notice.selectAll");
-		return list;
-	}
-	
-	public Notice select(int notice_id) {
-		Notice notice = null;
-		notice = sessionTemplate.selectOne("Notice.select", notice_id);
-		return notice;
-	}
-	
-	//int가 없어진 이유? Exception으로 처리할거라서!!!
-	public void insert(Notice notice) {
-		sessionTemplate.insert("Notice.insert", notice);
-	
-	}
-	
-	public void update(Notice notice) throws DMLException{
-		int result = sessionTemplate.update("Notice.update", notice);
-		result=0;
-		if(result==0) {
-			throw new DMLException("수정작업에 실패하였습니다.");
-		}
-	}
-	
-	public void delete(int notice_id) {
-		sessionTemplate.delete("Notice.delete", notice_id);
-	}
+//Enterprise 개발에서는 규모가 크기 때문에 각 영역마다(MVC) 객체들이 세분화되어 있다...
+//즉 나누어져있다. 이때 분리된 객체간의 관계는 느슨한게 (O), 타이트(빡빡)한게((X)
+//느슨할 수록 좋다!!!!!! 즉, 객체간 결합도를 낮추는 것이 좋다!! 이 방법을 구현한 기술이 바로 DI
+//즉, 의존성이 강한 객체를 보유하지 말고, 외부에서 주입받되, 주입받는 객체는 해당 자료형을 상위자료형으로
+//받자는 것이다...
+public interface NoticeDAO {
+	public List selectAll();
+	public Notice select(int notice_id);
+	public void insert(Notice notice);
+	public void update(Notice notice);
+	public void delete(int notice_id);
 }

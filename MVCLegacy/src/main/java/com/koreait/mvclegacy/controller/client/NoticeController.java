@@ -2,10 +2,12 @@ package com.koreait.mvclegacy.controller.client;
 
 import java.util.List;
 
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -55,26 +57,27 @@ public class NoticeController {
 	
 	//글 수정
 	@RequestMapping(value="/notice/edit", method=RequestMethod.POST)
-	public ModelAndView edit(Notice notice) {
-		ModelAndView mav = new ModelAndView();
-		try {
-			noticeService.update(notice);
-//			mav.addObject("msg", "수정성공");
-			mav.setViewName("redirect:/client/notice/detail?notice_id="+notice.getNotice_id());
-		} catch (DMLException e) {
-			//DMLException에 이미 심어놓은 메시지 꺼내서 사용하기
-			mav.addObject("msg", e.getMessage());
-			mav.setViewName("message/result");
-			e.printStackTrace();
-		}
-		return mav;
+	public String edit(Notice notice) {
+		noticeService.update(notice);
+		return "redirect:/client/notice/detail?notice_id="+notice.getNotice_id();
 	}
 	
 	//글 수정
-	@RequestMapping(value="/notice/del", method=RequestMethod.POST)
+	@RequestMapping(value="/notice/delete", method=RequestMethod.POST)
 	public String del(int notice_id) {
 		noticeService.delete(notice_id);
 		return "redirect:/client/notice/list";
 	}
 	
+	//스프링의 컨트롤러에 요청처리 메서드중 어느 하나라도 예외가 발생하면, 그 예외를 처리할 수 있는
+	//별도의 메서드가 지원된다.. 어노테이션의 명시한 예외만 감자하여 처리..
+	@ExceptionHandler(DMLException.class)
+	public ModelAndView handleException(DMLException e) {
+		ModelAndView mav = new ModelAndView();
+		//어떤 내용을 담을 지
+		mav.addObject("msg", e.getMessage());
+		//어느 페이즈를 보여줄지
+		mav.setViewName("message/result");
+		return mav;
+	}
 }
