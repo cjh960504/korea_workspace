@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.koreait.fashionshop.common.FileManager;
@@ -23,7 +26,7 @@ import com.koreait.fashionshop.model.product.service.TopCategoryService;
 
 //관리자 모드에서의 상품에 대한 요청 처리
 @Controller
-public class ProductController {
+public class ProductController implements ServletContextAware{
 	private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 	@Autowired
 	@Qualifier("topCategoryServiceImpl")
@@ -35,6 +38,18 @@ public class ProductController {
 	@Autowired
 	private FileManager fileManager;
 	
+	//우리가 왜 ServletContext를 써야하는가? getRealPath() 사용하려구~!
+	ServletContext servletContext;
+	
+	@Override
+	public void setServletContext(ServletContext servletContext) {
+		this.servletContext = servletContext; 
+		//이 타이밍을 놓치지말고, 실제 물리적 경로를 FileManager에 대입하자!
+		fileManager.setSaveBasicDir(servletContext.getRealPath(fileManager.getSaveBasicDir()));
+		fileManager.setSaveAddOnDir(servletContext.getRealPath(fileManager.getSaveAddOnDir()));
+		logger.debug(fileManager.getSaveBasicDir());
+	}
+
 	// 상위카테고리 가져오기
 	@RequestMapping(value = "/admin/product/registform", method = RequestMethod.GET)
 	public ModelAndView getTopList() {
@@ -97,17 +112,37 @@ public class ProductController {
 
 	// 상품 등록
 	@RequestMapping(value="/admin/product/regist", method=RequestMethod.POST)
+	@ResponseBody
 	public String registProduct(Product product) {
 		logger.debug("하위 카테고리 " + product.getSubcategory_id());
 		logger.debug("상품명 " + product.getProduct_name());
 		logger.debug("가격 " + product.getPrice());
 		logger.debug("브랜드 " + product.getBrand());
 		logger.debug("상세내용 " + product.getDetail());
-		logger.debug("업로드 이미지명 " + product.getRepImg().getOriginalFilename());
-		for(int i=0;i<product.getFit().length;i++) {
-			logger.debug("지원 사이즈는 " + product.getFit()[i]);
-		}
+//		logger.debug("업로드 이미지명 " + product.getRepImg().getOriginalFilename());
+//		for(MultipartFile file:product.getAddImg()) {
+//			logger.debug("추가이미지명 "+ file.getOriginalFilename());
+//		}
+//		for(int i=0;i<product.getFit().length;i++) {
+//			logger.debug("지원 사이즈는 " + product.getFit()[i]);
+//		}
 		
+		//logger.debug("insert하기 전 상품의 product_id "+product.getProduct_id());
+		productService.regist(fileManager, product);//상품등록
+		//logger.debug("방금 insert된 상품의 product_id "+product.getProduct_id());
+		
+		
+		
+		/*
+		 * //파일명이 생성되었으면, 이제 저장을 해보자!! //실제 물리적 경로를 얻어오려면,ServletContext가 보유한
+		 * getRealPath() 메서드가 필요하다,, try { //File.separator = OS환경에 맞게 알맞은 구분자를 넣어준다!!
+		 * product.getRepImg().transferTo(new
+		 * File(fileManager.getSaveBasicDir()+File.separator+basicImg));//저장 } catch
+		 * (IllegalStateException e) { e.printStackTrace(); } catch (IOException e) {
+		 * e.printStackTrace(); }
+		 */
+		return "gg";
+		/*
 		//대표이미지 업로드(파일명 : 현재 날짜로 처리)
 		//어떤 파일명으로, 어디에 저장할 지 결정
 		long time = System.currentTimeMillis();
@@ -126,12 +161,12 @@ public class ProductController {
 		}
 		
 		//db에 넣기
-		productService.regist(product);
+		productService.regist(product);*/
 		
-		
-		return "redirect:/admin/product/list";
 	}
 	// 상품 수정
 
 	// 상품 삭제
+	
+	//예외처리 : 위의 메서드 중에서 하나라도 예외가 발생하면, 
 }

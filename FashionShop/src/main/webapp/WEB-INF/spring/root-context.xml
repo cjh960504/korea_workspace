@@ -39,8 +39,9 @@
 	</bean>
 	
 	<!-- 파일매니저 등록 -->
-	<bean id="fileManager" class="com.koreait.fashionshop.common.FileManager" p:saveDir="C:/korea_workspace/FashionShop/src/main/webapp/resources/data"/>
 	
 	<!-- 모델 영역은 모든 서블릿에서 공용으로 사용할 예정이므로, ServletContext 수준에서 어플리케이션이 가동될 때부터 등록되어 있어야한다. -->
-	<context:component-scan base-package="com.koreait.fashionshop.model"/>
+	<context:component-scan base-package="com.koreait.fashionshop">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
 </beans>
