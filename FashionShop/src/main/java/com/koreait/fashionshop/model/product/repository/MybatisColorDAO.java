@@ -6,6 +6,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.koreait.fashionshop.exception.ProductRegistException;
 import com.koreait.fashionshop.model.domain.Color;
 
 @Repository
@@ -32,8 +33,11 @@ public class MybatisColorDAO implements ColorDAO{
 	}
 
 	@Override
-	public void insert(Color color) {
-		sqlSessionTemplate.insert("Color.insert", color);
+	public void insert(Color color) throws ProductRegistException{
+		int result = sqlSessionTemplate.insert("Color.insert", color);
+		if(result==0) {
+			throw new ProductRegistException("상품 색상 입력 실패");
+		}
 	}
 
 	@Override

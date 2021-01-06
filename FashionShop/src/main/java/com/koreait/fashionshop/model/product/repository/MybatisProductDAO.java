@@ -6,6 +6,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.koreait.fashionshop.exception.ProductRegistException;
 import com.koreait.fashionshop.model.domain.Product;
 
 @Repository
@@ -16,26 +17,26 @@ public class MybatisProductDAO implements ProductDAO{
 	
 	@Override
 	public List selectAll() {
-		// TODO Auto-generated method stub
-		return null;
+		return sqlSessionTemplate.selectList("Product.selectAll");
 	}
 
 	@Override
 	public List selectById(int subcategory_id) {
-		// TODO Auto-generated method stub
-		return null;
+		return sqlSessionTemplate.selectList("Product.selectBySubCategoryId", subcategory_id);
 	}
 
 	@Override
 	public Product select(int product_id) {
-		// TODO Auto-generated method stub
-		return null;
+		return sqlSessionTemplate.selectOne("Product.select", product_id);
 	}
 
 	@Override
-	public void insert(Product product) {
+	public void insert(Product product) throws ProductRegistException{
 		//예외처리 예정
-		sqlSessionTemplate.insert("Product.insert", product);
+		int result = sqlSessionTemplate.insert("Product.insert", product);
+		if(result==0) {
+			throw new ProductRegistException("상품테이블에 입력실패");
+		}
 	}
 
 	@Override

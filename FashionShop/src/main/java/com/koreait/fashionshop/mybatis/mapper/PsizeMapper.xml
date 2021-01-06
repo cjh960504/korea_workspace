@@ -4,4 +4,7 @@
 	<insert id="insert" parameterType="Psize">
 		insert into psize(psize_id, product_id, fit) values(seq_psize.nextval, #{product_id}, #{fit})
 	</insert>
+	<select id="selectByProductId" parameterType="int" resultType="Psize">
+		select * from psize where product_id=#{product_id} order by fit asc
+	</select>
 </mapper>

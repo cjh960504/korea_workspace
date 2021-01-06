@@ -68,7 +68,7 @@ input[type=button]:hover {
 </style>
 <script>
 	var uploadFiles=[]; //이미지 미리보기 목록
-	var psizeArray=[];//유저가 선택한 사이즈를 담는 배열
+	var psize=[];//유저가 선택한 사이즈를 담는 배열
 	
 	$(function() {
 		CKEDITOR.replace('detail');
@@ -131,9 +131,22 @@ input[type=button]:hover {
 		
 		//체크박스 이벤트 구현
 		$("input[type='checkbox']").on("click", function (e) {
-			var ch = e.target;//이벤트를 일으킨 주체 컴포넌트 즉 체크박스
-			//alert($(ch).val);
-			console.log(ch.name);
+			var ch = $("input[name='size']");//이벤트를 일으킨 주체 컴포넌트 즉 체크박스
+			
+			//체크박스의 길이 얻기
+			var len = $(ch).length;
+			
+			//모든 배열 지우기
+			psize=[];
+			
+			for(var i=0;i<len;i++){
+				//만일 체크가 되어있다면, 기존 배열을 모두 지워고 체크된 체크박스 값만 배열에 넣자
+				if($($(ch)[i]).is(":checked")){
+					psize.push($($(ch)[i]).val());
+				}
+				//console.log(i+"번째 체크박스 상태는 "+$($(ch)[i]).is(":checked"));
+			}
+			console.log("서버에 전송할 사이즈 배열의 구성은 ", psize);
 		});
 	});
 
@@ -202,6 +215,9 @@ input[type=button]:hover {
 		
 		//폼데이터에 에디터의 값 추가하기!!
 		formData.append("detail", CKEDITOR.instances["detail"].getData());
+		for(var i=0;i<psize.length;i++){
+			formData.append("psize["+i+"].fit", psize[i]);//==//formData.append("test", new Array("banana", "apple", "orange"));
+		}
 		
 		/* 비동기 업로드*/
 		$.ajax({
@@ -210,8 +226,13 @@ input[type=button]:hover {
 			contentType:false,/*false일 경우 multipart/form-data로 지정한 효과!*/
 			processData:false,/*false일 경우 query-string으로 전송하지 않음, 문자열만 보내는게 아니라 이미지도 껴있기 떄문에 stream방식*/
 			type:"post",
-			success:function(result){
-				alert(result);
+			success:function(responseData){
+				//성공실패 여부를 판단할 수 있는 데이터
+				if(responseData.result==1){
+					location.href="/admin/product/list";
+				}else{
+					alert(responseData.message);
+				}
 			}
 		});
 		
@@ -244,7 +265,7 @@ input[type=button]:hover {
 				<%
 				}
 				%>
-			</select> <select name="subcategory_id">
+			</select> <select name="subCategory.subcategory_id">
 				<option>하위카테고리 선택</option>
 			</select> <input type="text" name="product_name" placeholder="상품명"> <input
 				type="text" name="price" placeholder="가격"> <input
@@ -258,12 +279,12 @@ input[type=button]:hover {
 
 			<!-- 지원 사이즈 선택 -->
 			<p>
-				 XS<input type="checkbox" name="psize[0].fit" value="XS"> 
-				 S<input type="checkbox" name="psize[1].fit" value="S"> 
-				 M<input type="checkbox" name="psize[2].fit" value="M">
-				 L<input type="checkbox" name="psize[3].fit" value="L">
-				 XL<input type="checkbox" name="psize[4].fit" value="XL">
-				 XXL<input type="checkbox" name="psize[5].fit" value="XXL">
+				 XS<input type="checkbox" name="size" value="XS"> 
+				 S<input type="checkbox" name="size" value="S"> 
+				 M<input type="checkbox" name="size" value="M">
+				 L<input type="checkbox" name="size" value="L">
+				 XL<input type="checkbox" name="size" value="XL">
+				 XXL<input type="checkbox" name="size" value="XXL">
 			</p>
 			<p>
 				<input type="color" name="color[0].picker" value="#ccfefe">
@@ -273,11 +294,9 @@ input[type=button]:hover {
 				<input type="color" name="color[4].picker" value="#fdfdfd">
 				<input type="color" name="color[5].picker" value="#ff0000">
 			</p>
-			<textarea name="detail" id="detail" placeholder="상세정보"
-				style="height: 200px"></textarea>
-			<input type="button" value="글등록" onClick="regist()"> <input
-				type="button" value="목록보기"
-				onClick="location.href='/client/notice/list'">
+			<textarea name="detail" id="detail" placeholder="상세정보" style="height: 200px"></textarea>
+			<input type="button" value="글등록" onClick="regist()"> 
+			<input type="button" value="목록보기"	onClick="location.href='/client/notice/list'">
 		</form>
 	</div>
 </body>

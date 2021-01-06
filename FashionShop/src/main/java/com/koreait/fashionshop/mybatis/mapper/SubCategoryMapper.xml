@@ -5,5 +5,7 @@
 	<select id="selectAllById" resultType="SubCategory" parameterType="int">
 		select * from subcategory where topcategory_id=#{topcategory_id}
 	</select>
-	 
+	 <select id="select" parameterType="int" resultType="SubCategory">
+	 	select * from subcategory where subcategory_id=#{subcategory_id}
+	 </select>
 </mapper>
