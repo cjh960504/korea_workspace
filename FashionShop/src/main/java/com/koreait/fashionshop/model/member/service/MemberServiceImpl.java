@@ -5,10 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.koreait.fashionshop.common.MailSender;
-import com.koreait.fashionshop.common.SecureManager;
 import com.koreait.fashionshop.exception.MailSendException;
+import com.koreait.fashionshop.exception.MemberNotFoundException;
 import com.koreait.fashionshop.exception.MemberRegistException;
+import com.koreait.fashionshop.model.common.MailSender;
+import com.koreait.fashionshop.model.common.SecureManager;
 import com.koreait.fashionshop.model.domain.Member;
 import com.koreait.fashionshop.model.member.repository.MemberDAO;
 
@@ -32,9 +33,11 @@ public class MemberServiceImpl implements MemberSerivce{
 	}
 
 	@Override
-	public Member select(int member_id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Member select(Member member) throws MemberNotFoundException{
+		//유저가 전송한 파라미터비번을 해시값으로 변환하여 아래의 메서드 호출
+		String hash = secureManager.getSecureData(member.getPassword());
+		member.setPassword(hash);
+		return memberDAO.select(member);
 	}
 
 	@Override

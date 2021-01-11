@@ -2,3 +2,5 @@
 FashionShop/src/main/webapp/resources/data/
 ShopReview/target/fashionshop-1.0.0-BUILD-SNAPSHOT/resources/img/product-img/product-2.jpg
 ShopReview/
+FashionShop/target/classes/com/koreait/fashionshop/model/common/MailSender$1.class
+FashionShop/target/classes/com/koreait/fashionshop/model/common/MailSender.class
